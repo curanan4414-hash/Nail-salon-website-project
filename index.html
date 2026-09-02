@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nail Salon Booking</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    body {
+      background-color: #fdfaf7;
+      color: #333;
+      margin: 0;
+      padding: 20px;
+    }
+    .container {
+      max-width: 600px;
+      margin: 0 auto;
+      background: #ffffff;
+      padding: 30px;
+      border-radius: 16px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+    h1 {
+      text-align: center;
+      color: #8c6d62;
+      margin-bottom: 8px;
+    }
+    p.subtitle {
+      text-align: center;
+      color: #888;
+      margin-top: 0;
+      margin-bottom: 24px;
+    }
+    .form-group {
+      margin-bottom: 16px;
+    }
+    label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 600;
+      color: #555;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #e0d6d0;
+      border-radius: 8px;
+      font-size: 14px;
+      outline: none;
+    }
+    input:focus, select:focus, textarea:focus {
+      border-color: #bfa094;
+    }
+    .row {
+      display: flex;
+      gap: 12px;
+    }
+    .row .form-group {
+      flex: 1;
+    }
+    button {
+      width: 100%;
+      padding: 12px;
+      background-color: #a37968;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 10px;
+      transition: 0.2s;
+    }
+    button:hover {
+      background-color: #8c6454;
+    }
+    #resultBox {
+      display: none;
+      margin-top: 20px;
+      padding: 16px;
+      border-radius: 8px;
+      background-color: #f1f8f3;
+      border: 1px solid #c3e6cb;
+      color: #155724;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <h1>✨ Nail Studio Booking ✨</h1>
+    <p class="subtitle">ระบบจองคิวทำเล็บออนไลน์</p>
+
+    <form id="bookingForm">
+      <div class="form-group">
+        <label for="customerName">ชื่อผู้จอง</label>
+        <input type="text" id="customerName" placeholder="ระบุชื่อของคุณ" required>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="phone">เบอร์โทรศัพท์</label>
+          <input type="tel" id="phone" placeholder="08x-xxx-xxxx" required>
+        </div>
+        <div class="form-group">
+          <label for="lineId">LINE ID</label>
+          <input type="text" id="lineId" placeholder="เพื่อรับแจ้งเตือนยืนยัน">
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="service">เลือกบริการ</label>
+        <select id="service" required>
+          <option value="">-- กรุณาเลือกบริการ --</option>
+          <option value="gel-color">ทาสีเจลพื้น (350฿ / 45 นาที)</option>
+          <option value="gel-art">ทาสีเจล + เพ้นท์ลาย/ติดอะไหล่ (550฿ / 1.5 ชม.)</option>
+          <option value="pvc-ext">ต่อเล็บ PVC + สีเจล (690฿ / 1.5 ชม.)</option>
+          <option value="poly-ext">ต่อเล็บ Poly Gel / ฝังลาย (1,200฿ / 2.5 ชม.)</option>
+          <option value="remove">ถอดเล็บ / ล้างสีเดิม (100฿ / 20 นาที)</option>
+        </select>
+      </div>
+
+      <div class="row">
+        <div class="form-group">
+          <label for="bookingDate">วันที่ต้องการจอง</label>
+          <input type="date" id="bookingDate" required>
+        </div>
+        <div class="form-group">
+          <label for="bookingTime">รอบเวลา</label>
+          <select id="bookingTime" required>
+            <option value="">-- เลือกรอบเวลา --</option>
+            <option value="10:00">10:00 - 12:00</option>
+            <option value="13:00">13:00 - 15:00</option>
+            <option value="15:30">15:30 - 17:30</option>
+            <option value="18:00">18:00 - 20:00</option>
+          </select>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label for="refImage">แนบภาพเรฟที่ต้องการทำ (ถ้ามี)</label>
+        <input type="file" id="refImage" accept="image/*">
+      </div>
+
+      <div class="form-group">
+        <label for="note">รายละเอียดเพิ่มเติม / หมายเหตุ</label>
+        <textarea id="note" rows="3" placeholder="เช่น มีเล็บฉีก, ต้องการถอดสีเก่าด้วย"></textarea>
+      </div>
+
+      <button type="submit">ยืนยันการจองคิว</button>
+    </form>
+
+    <div id="resultBox">
+      <strong>บันทึกข้อมูลเรียบร้อย!</strong><br>
+      ทางร้านได้รับข้อมูลการจองของคุณแล้ว จะติดต่อยืนยันคิวผ่านเบอร์โทร/LINE อีกครั้ง
+    </div>
+  </div>
+
+  <script>
+    const form = document.getElementById('bookingForm');
+    const resultBox = document.getElementById('resultBox');
+
+    form.addEventListener('submit', function(e) {
+      e.preventDefault();
+      
+      const name = document.getElementById('customerName').value;
+      const service = document.getElementById('service').value;
+      const date = document.getElementById('bookingDate').value;
+      const time = document.getElementById('bookingTime').value;
+
+      // ตัวอย่างการแสดงผลหลังกดยืนยัน
+      resultBox.style.display = 'block';
+      resultBox.innerHTML = `
+        <strong>จองคิวสำเร็จ!</strong><br>
+        คุณ: ${name}<br>
+        บริการ: ${service}<br>
+        วันที่: ${date} เวลา: ${time}<br>
+        <em>กรุณารอร้านติดต่อยืนยันคิวครับ</em>
+      `;
+      form.reset();
+    });
+  </script>
+</body>
+</html>
