@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ทำเล็บ เอาสังคม | หลังบ้านเจ้าของร้าน</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Prompt', sans-serif; background-color: #F8FAFC; }</style>
+</head>
+<body class="text-slate-800 min-h-screen p-4 sm:p-6 pb-20">
+
+  <div class="max-w-4xl mx-auto space-y-4">
+    <header class="bg-slate-800 text-white rounded-3xl p-4 sm:p-5 shadow-xl flex justify-between items-center">
+      <div>
+        <span class="text-[10px] text-pink-300 font-semibold tracking-wider uppercase">Owner Management</span>
+        <h1 class="text-base sm:text-lg font-bold">ทำเล็บ เอาสังคม (ช่างพลอย)</h1>
+     <div class="flex gap-2">
+        <button type="button" onclick="setTab('queue')" id="btnQ" class="px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition">คิวและสลิป</button>
+        <button type="button" onclick="setTab('service')" id="btnS" class="px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition">บริการ</button>
+      </div>
+    </header>
+
+    <!-- 1. คิวงาน & สลิปมัดจำ -->
+    <section id="secQueue" class="bg-white rounded-3xl p-5 shadow-sm border space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="text-sm font-bold text-slate-800">ไทม์ไลน์คิวประจำวัน</h2>
+        <input type="date" id="dateFilter" class="px-2.5 py-1 text-xs border rounded-xl outline-none" onchange="renderQueue()" />
+      </div>
+      <div id="queueList" class="space-y-3"></div>
+    </section>
+
+    <!-- 2. จัดการบริการ -->
+    <section id="secService" class="hidden bg-white rounded-3xl p-5 shadow-sm border space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="text-sm font-bold text-slate-800">บริการและระยะเวลาบล็อกคิว</h2>
+        <button onclick="openModal()" class="px-3 py-1 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-xs font-bold transition">+ เพิ่มบริการ</button>
+      </div>
+      <div id="serviceList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
+    </section>
+  </div>
+
+  <!-- Modal เพิ่มบริการ -->
+  <div id="svcModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
+    <div class="bg-white w-full max-w-xs rounded-3xl p-5 space-y-2.5">
+      <h3 class="text-xs font-bold text-slate-800">เพิ่มรายการบริการ</h3>
+      <input type="text" id="mName" placeholder="ชื่อบริการ *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
+      <input type="number" id="mPrice" placeholder="ราคา *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
+      <input type="number" id="mDuration" placeholder="เวลาบล็อกคิว (นาที) *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
+      <div class="flex gap-2 pt-2">
+        <button type="button" onclick="closeModal()" class="w-1/3 py-1.5 border rounded-xl text-xs text-slate-600">ยกเลิก</button>
+        <button type="button" onclick="addService()" class="w-2/3 py-1.5 bg-pink-500 text-white rounded-xl text-xs font-bold">บันทึก</button>
+      </div>
+    </div>
+  </div>
+
+  <script src="shared.js"></script>
+  <script>
+    function setTab(t) {
+      if (t === 'queue') {
+        document.getElementById('secQueue').classList.remove('hidden');
+        document.getElementById('secService').classList.add('hidden');
+        document.getElementById('btnQ').className = 'px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition';
+        document.getElementById('btnS').className = 'px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition';
+        renderQueue();
+      } else {
+        document.getElementById('secQueue').classList.add('hidden');
+        document.getElementById('secService').classList.remove('hidden');
+        document.getElementById('btnS').className = 'px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition';
+        document.getElementById('btnQ').className = 'px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition';
+        renderServices();
+      }
+    }
+
+    function renderQueue() {
+      const d = document.getElementById('dateFilter').value;
+      const list = document.getElementById('queueList');
+      list.innerHTML = '';
+      const dayBookings = getBookingsData().filter(b => b.date === d).sort((a, b) => a.startTime.localeCompare(b.startTime));
+
+      if (dayBookings.length === 0) {
+        list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">ไม่มีคิวในวันนี้</p>';
+        return;
+      }
+
+      dayBookings.forEach(b => {
+        const item = document.createElement('div');
+        item.className = 'p-3 border rounded-2xl bg-slate-50 text-xs space-y-2';
+        item.innerHTML = `
+          <div class="flex justify-between items-center border-b pb-1">
+            <span class="font-bold text-slate-800">${b.startTime} - ${b.endTime} น. | ${b.name} (${b.code})</span>
+            <span class="font-bold text-pink-600">${b.statusText}</span>
+          </div>
+          <p>เบอร์โทร: ${b.tel} | LINE/IG: ${b.contact}</p>
+          <p>บริการ: ${b.services.join(' + ')} (บล็อก ${b.duration} นาที)</p>
+          <div class="grid grid-cols-2 gap-2">
+            <div>
+              <span class="text-[10px] text-slate-400 block mb-0.5">ภาพเรฟเล็บ:</span>
+              ${b.refImg ? `<img src="${b.refImg}" class="h-20 w-full object-cover rounded-lg border">` : '<div class="h-20 bg-slate-200 rounded-lg flex items-center justify-center text-[10px] text-slate-400">ไม่มีภาพ</div>'}
+            </div>
+            <div>
+              <span class="text-[10px] text-slate-400 block mb-0.5">สลิป 50.- :</span>
+              ${b.slipImg ? `<img src="${b.slipImg}" class="h-20 w-full object-cover rounded-lg border">` : '<div class="h-20 bg-slate-200 rounded-lg flex items-center justify-center text-[10px] text-slate-400">ไม่มีสลิป</div>'}
+            </div>
+          </div>
+          <div class="flex gap-2 pt-1">
+            ${b.depositStatus === 'pending_verify' ? `<button onclick="updateStatus('${b.code}', 'verified', 'อนุมัติคิวแล้ว')" class="flex-1 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold">อนุมัติสลิป 50.-</button>` : ''}
+            <button onclick="updateStatus('${b.code}', 'completed', 'ทำเล็บเสร็จแล้ว')" class="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold">เสร็จแล้ว</button>
+            <button onclick="updateStatus('${b.code}', 'cancelled', 'ยกเลิกคิวแล้ว')" class="px-3 py-1.5 bg-rose-100 text-rose-700 rounded-lg text-xs font-bold">ยกเลิก</button>
+          </div>
+        `;
+        list.appendChild(item);
+      });
+    }
+
+    function updateStatus(code, status, text) {
+      const data = getBookingsData();
+      const t = data.find(b => b.code === code);
+      if (t) {
+        t.depositStatus = status;
+        t.statusText = text;
+        saveBookingsData(data);
+        renderQueue();
+      }
+    }
+
+    function renderServices() {
+      const c = document.getElementById('serviceList');
+      c.innerHTML = '';
+      getServicesData().forEach(s => {
+        const d = document.createElement('div');
+        d.className = 'p-2.5 border rounded-xl bg-slate-50 flex justify-between items-center text-xs';
+        d.innerHTML = `
+          <div><strong class="block text-slate-800">${s.name}</strong><span class="text-slate-400">${s.price}.- (บล็อก ${s.duration} น.)</span></div>
+          <button onclick="delService(${s.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded-lg">ลบ</button>
+        `;
+        c.appendChild(d);
+      });
+    }
+
+    function openModal() {
+      document.getElementById('svcModal').classList.remove('hidden');
+      document.getElementById('svcModal').classList.add('flex');
+    }
+    function closeModal() {
+      document.getElementById('svcModal').classList.add('hidden');
+      document.getElementById('svcModal').classList.remove('flex');
+    }
+
+    function addService() {
+      const name = document.getElementById('mName').value;
+      const price = parseInt(document.getElementById('mPrice').value);
+      const duration = parseInt(document.getElementById('mDuration').value);
+      if (!name || !price || !duration) return alert('กรอกข้อมูลให้ครบถ้วนค่ะ');
+
+      const data = getServicesData();
+      data.push({ id: Date.now(), name, price, duration, category: 'บริการเสริม & ล้างเล็บ' });
+      saveServicesData(data);
+      closeModal();
+      renderServices();
+    }
+
+    function delService(id) {
+      if (confirm('ยืนยันลบบริการนี้ใช่หรือไม่?')) {
+        saveServicesData(getServicesData().filter(s => s.id !== id));
+        renderServices();
+      }
+    }
+
+    document.getElementById('dateFilter').value = new Date().toISOString().split('T')[0];
+    renderQueue();
+  </script>
+</body>
+</html>
