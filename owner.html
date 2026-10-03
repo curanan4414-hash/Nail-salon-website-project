@@ -3,172 +3,231 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>ทำเล็บ เอาสังคม | หลังบ้านเจ้าของร้าน</title>
+  <title>เจ้าของร้าน (Admin Login) - Nail Studio</title>
   <script src="https://cdn.tailwindcss.com"></script>
-  <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-  <style>body { font-family: 'Prompt', sans-serif; background-color: #F8FAFC; }</style>
+  <link href="https://fonts.googleapis.com/css2?family=Kanit:wght@300;400;500;600&display=swap" rel="stylesheet">
+  <style>body { font-family: 'Kanit', sans-serif; }</style>
 </head>
-<body class="text-slate-800 min-h-screen p-4 sm:p-6 pb-20">
+<body class="bg-gray-50 min-h-screen">
 
-  <div class="max-w-4xl mx-auto space-y-4">
-    <header class="bg-slate-800 text-white rounded-3xl p-4 sm:p-5 shadow-xl flex justify-between items-center">
+  <!-- ================= หน้าต่างกรอกรหัสผ่านแอดมิน ================= -->
+  <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
+    <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100 max-w-sm w-full text-center space-y-5">
+      <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
+        🔒
+      </div>
       <div>
-        <span class="text-[10px] text-pink-300 font-semibold tracking-wider uppercase">Owner Management</span>
-        <h1 class="text-base sm:text-lg font-bold">ทำเล็บ เอาสังคม (ช่างพลอย)</h1>
-     <div class="flex gap-2">
-        <button type="button" onclick="setTab('queue')" id="btnQ" class="px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition">คิวและสลิป</button>
-        <button type="button" onclick="setTab('service')" id="btnS" class="px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition">บริการ</button>
+        <h2 class="text-xl font-bold text-gray-800">เข้าสู่ระบบเจ้าของร้าน</h2>
+        <p class="text-xs text-gray-500 mt-1">เฉพาะเจ้าของร้านและผู้ดูแลระบบเท่านั้น</p>
       </div>
-    </header>
 
-    <!-- 1. คิวงาน & สลิปมัดจำ -->
-    <section id="secQueue" class="bg-white rounded-3xl p-5 shadow-sm border space-y-3">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h2 class="text-sm font-bold text-slate-800">ไทม์ไลน์คิวประจำวัน</h2>
-        <input type="date" id="dateFilter" class="px-2.5 py-1 text-xs border rounded-xl outline-none" onchange="renderQueue()" />
-      </div>
-      <div id="queueList" class="space-y-3"></div>
-    </section>
+      <form onsubmit="handleLogin(event)" class="space-y-4 text-left">
+        <div>
+          <label class="block text-xs font-medium text-gray-700 mb-1">รหัสผ่าน (Admin PIN/Password)</label>
+          <input type="password" id="adminPassword" placeholder="กรอกรหัสผ่านแอดมิน" required
+                 class="w-full border rounded-lg px-3.5 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-pink-500">
+          <p id="loginError" class="text-xs text-red-500 mt-1.5 hidden">รหัสผ่านไม่ถูกต้อง กรุณาลองใหม่อีกครั้ง</p>
+        </div>
 
-    <!-- 2. จัดการบริการ -->
-    <section id="secService" class="hidden bg-white rounded-3xl p-5 shadow-sm border space-y-3">
-      <div class="flex justify-between items-center border-b pb-2">
-        <h2 class="text-sm font-bold text-slate-800">บริการและระยะเวลาบล็อกคิว</h2>
-        <button onclick="openModal()" class="px-3 py-1 bg-pink-500 hover:bg-pink-600 text-white rounded-xl text-xs font-bold transition">+ เพิ่มบริการ</button>
+        <button type="submit" class="w-full bg-pink-600 hover:bg-pink-700 text-white py-2 rounded-xl text-sm font-medium transition shadow-sm">
+          เข้าสู่ระบบ
+        </button>
+      </form>
+
+      <div class="pt-2 border-t text-xs">
+        <a href="index.html" class="text-gray-500 hover:text-gray-700">← กลับไปยังหน้าหลัก</a>
       </div>
-      <div id="serviceList" class="grid grid-cols-1 sm:grid-cols-2 gap-2"></div>
-    </section>
+    </div>
   </div>
 
-  <!-- Modal เพิ่มบริการ -->
-  <div id="svcModal" class="fixed inset-0 bg-black/60 hidden items-center justify-center p-4 z-50">
-    <div class="bg-white w-full max-w-xs rounded-3xl p-5 space-y-2.5">
-      <h3 class="text-xs font-bold text-slate-800">เพิ่มรายการบริการ</h3>
-      <input type="text" id="mName" placeholder="ชื่อบริการ *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
-      <input type="number" id="mPrice" placeholder="ราคา *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
-      <input type="number" id="mDuration" placeholder="เวลาบล็อกคิว (นาที) *" class="w-full px-3 py-1.5 text-xs border rounded-xl outline-none">
-      <div class="flex gap-2 pt-2">
-        <button type="button" onclick="closeModal()" class="w-1/3 py-1.5 border rounded-xl text-xs text-slate-600">ยกเลิก</button>
-        <button type="button" onclick="addService()" class="w-2/3 py-1.5 bg-pink-500 text-white rounded-xl text-xs font-bold">บันทึก</button>
+  <!-- ================= หน้าจัดการของแอดมิน (แสดงเมื่อล็อกอินผ่านแล้ว) ================= -->
+  <div id="adminPanel" class="hidden max-w-4xl mx-auto p-6 space-y-6">
+    <!-- Header -->
+    <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
+      <div>
+        <h1 class="text-lg font-bold text-gray-800">ระบบเจ้าของร้าน (Admin Panel)</h1>
+        <p class="text-xs text-green-600 font-medium">● เข้าสู่ระบบแล้ว (Authorized)</p>
       </div>
+      <div class="flex items-center gap-2">
+        <a href="index.html" class="text-xs text-gray-500 hover:text-gray-700 px-3 py-1.5 border rounded-lg bg-gray-50">หน้าหลัก</a>
+        <button onclick="logoutAdmin()" class="text-xs bg-red-50 text-red-600 hover:bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 font-medium transition">
+          ออกจากระบบ
+        </button>
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 1: คำนวณยอดเงินและหักมัดจำ 50 บาท (ID 5) -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="font-semibold text-gray-800 text-sm">หักยอดมัดจำ 50 บาทจากค่าบริการจริง (ID 5)</h2>
+        <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-medium">User Story ID 5</span>
+      </div>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs bg-pink-50/50 p-4 rounded-lg items-center">
+        <div>
+          <label class="block text-gray-600 mb-1">ยอดค่าบริการจริง (บาท)</label>
+          <input type="number" id="actualPrice" value="500" oninput="calcNet()" class="w-full border rounded px-2.5 py-1.5 bg-white font-semibold">
+        </div>
+        <div>
+          <label class="block text-gray-600 mb-1">หักลบยอดมัดจำ</label>
+          <div class="text-red-500 font-bold py-1.5">- 50 บาท (อัตโนมัติ)</div>
+        </div>
+        <div>
+          <label class="block text-gray-600 mb-1">ยอดเงินที่ต้องเรียกเก็บเพิ่ม</label>
+          <div id="netAmount" class="text-pink-600 text-lg font-bold">450 บาท</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ส่วนที่ 2: จัดการรายการบริการ เพิ่ม/แก้ไข/ลบ (ID 7) -->
+    <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
+      <div class="flex justify-between items-center border-b pb-2">
+        <h2 class="font-semibold text-gray-800 text-sm">เพิ่ม แก้ไข และลบรายการบริการ (ID 7)</h2>
+        <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-medium">User Story ID 7</span>
+      </div>
+
+      <!-- ฟอร์มเพิ่ม/แก้ -->
+      <form onsubmit="saveService(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
+        <input type="hidden" id="editId">
+        <input type="text" id="svcName" placeholder="ชื่อบริการ" required class="border rounded-lg px-3 py-1.5 text-xs col-span-2">
+        <input type="number" id="svcPrice" placeholder="ราคา (บาท)" required class="border rounded-lg px-3 py-1.5 text-xs">
+        <input type="number" id="svcDuration" placeholder="เวลา (นาที)" required class="border rounded-lg px-3 py-1.5 text-xs">
+        <div class="sm:col-span-4 text-right space-x-1">
+          <button type="button" onclick="cancelEdit()" id="cancelBtn" class="text-xs text-gray-500 px-3 py-1 hidden">ยกเลิก</button>
+          <button type="submit" id="saveBtn" class="bg-pink-600 text-white text-xs px-4 py-1.5 rounded-lg hover:bg-pink-700">+ เพิ่มบริการ</button>
+        </div>
+      </form>
+
+      <!-- ตารางแสดงรายการ -->
+      <table class="w-full text-xs text-left">
+        <thead class="bg-gray-50 border-y">
+          <tr>
+            <th class="p-2">ชื่อบริการ</th>
+            <th class="p-2">ราคา (บาท)</th>
+            <th class="p-2">ระยะเวลา (นาที)</th>
+            <th class="p-2 text-center">จัดการ</th>
+          </tr>
+        </thead>
+        <tbody id="svcBody" class="divide-y"></tbody>
+      </table>
     </div>
   </div>
 
   <script src="shared.js"></script>
   <script>
-    function setTab(t) {
-      if (t === 'queue') {
-        document.getElementById('secQueue').classList.remove('hidden');
-        document.getElementById('secService').classList.add('hidden');
-        document.getElementById('btnQ').className = 'px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition';
-        document.getElementById('btnS').className = 'px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition';
-        renderQueue();
+    // รหัสผ่านของแอดมิน (สามารถเปลี่ยนตรงนี้ได้)
+    const ADMIN_PASS = "admin1234";
+
+    // ตรวจสอบว่าเคยเข้าสู่ระบบค้างไว้หรือไม่ (Session Storage)
+    function checkAuth() {
+      const isAuth = sessionStorage.getItem('isAdminLoggedIn');
+      if (isAuth === 'true') {
+        document.getElementById('loginSection').classList.add('hidden');
+        document.getElementById('adminPanel').classList.remove('hidden');
+        renderSvcTable();
+        calcNet();
       } else {
-        document.getElementById('secQueue').classList.add('hidden');
-        document.getElementById('secService').classList.remove('hidden');
-        document.getElementById('btnS').className = 'px-3 py-1.5 bg-pink-500 rounded-xl text-xs font-bold transition';
-        document.getElementById('btnQ').className = 'px-3 py-1.5 bg-slate-700 rounded-xl text-xs font-bold transition';
-        renderServices();
+        document.getElementById('loginSection').classList.remove('hidden');
+        document.getElementById('adminPanel').classList.add('hidden');
       }
     }
 
-    function renderQueue() {
-      const d = document.getElementById('dateFilter').value;
-      const list = document.getElementById('queueList');
-      list.innerHTML = '';
-      const dayBookings = getBookingsData().filter(b => b.date === d).sort((a, b) => a.startTime.localeCompare(b.startTime));
+    // ฟังก์ชันตรวจสอบการล็อกอิน
+    function handleLogin(e) {
+      e.preventDefault();
+      const enteredPass = document.getElementById('adminPassword').value;
+      const errorEl = document.getElementById('loginError');
 
-      if (dayBookings.length === 0) {
-        list.innerHTML = '<p class="text-xs text-slate-400 text-center py-6">ไม่มีคิวในวันนี้</p>';
-        return;
+      if (enteredPass === ADMIN_PASS) {
+        sessionStorage.setItem('isAdminLoggedIn', 'true');
+        errorEl.classList.add('hidden');
+        document.getElementById('adminPassword').value = '';
+        checkAuth();
+      } else {
+        errorEl.classList.remove('hidden');
       }
+    }
 
-      dayBookings.forEach(b => {
-        const item = document.createElement('div');
-        item.className = 'p-3 border rounded-2xl bg-slate-50 text-xs space-y-2';
-        item.innerHTML = `
-          <div class="flex justify-between items-center border-b pb-1">
-            <span class="font-bold text-slate-800">${b.startTime} - ${b.endTime} น. | ${b.name} (${b.code})</span>
-            <span class="font-bold text-pink-600">${b.statusText}</span>
-          </div>
-          <p>เบอร์โทร: ${b.tel} | LINE/IG: ${b.contact}</p>
-          <p>บริการ: ${b.services.join(' + ')} (บล็อก ${b.duration} นาที)</p>
-          <div class="grid grid-cols-2 gap-2">
-            <div>
-              <span class="text-[10px] text-slate-400 block mb-0.5">ภาพเรฟเล็บ:</span>
-              ${b.refImg ? `<img src="${b.refImg}" class="h-20 w-full object-cover rounded-lg border">` : '<div class="h-20 bg-slate-200 rounded-lg flex items-center justify-center text-[10px] text-slate-400">ไม่มีภาพ</div>'}
-            </div>
-            <div>
-              <span class="text-[10px] text-slate-400 block mb-0.5">สลิป 50.- :</span>
-              ${b.slipImg ? `<img src="${b.slipImg}" class="h-20 w-full object-cover rounded-lg border">` : '<div class="h-20 bg-slate-200 rounded-lg flex items-center justify-center text-[10px] text-slate-400">ไม่มีสลิป</div>'}
-            </div>
-          </div>
-          <div class="flex gap-2 pt-1">
-            ${b.depositStatus === 'pending_verify' ? `<button onclick="updateStatus('${b.code}', 'verified', 'อนุมัติคิวแล้ว')" class="flex-1 py-1.5 bg-emerald-600 text-white rounded-lg text-xs font-bold">อนุมัติสลิป 50.-</button>` : ''}
-            <button onclick="updateStatus('${b.code}', 'completed', 'ทำเล็บเสร็จแล้ว')" class="px-3 py-1.5 bg-purple-100 text-purple-700 rounded-lg text-xs font-bold">เสร็จแล้ว</button>
-            <button onclick="updateStatus('${b.code}', 'cancelled', 'ยกเลิกคิวแล้ว')" class="px-3 py-1.5 bg-rose-100 text-rose-700 rounded-lg text-xs font-bold">ยกเลิก</button>
-          </div>
+    // ฟังก์ชันออกจากระบบ
+    function logoutAdmin() {
+      sessionStorage.removeItem('isAdminLoggedIn');
+      checkAuth();
+    }
+
+    // --- ส่วนการทำงานเดิมของ ID 5 และ ID 7 ---
+    function calcNet() {
+      const price = parseFloat(document.getElementById('actualPrice').value) || 0;
+      const net = Math.max(0, price - 50);
+      document.getElementById('netAmount').innerText = `${net} บาท`;
+    }
+
+    function renderSvcTable() {
+      const services = getServices();
+      const tbody = document.getElementById('svcBody');
+      tbody.innerHTML = '';
+      services.forEach(s => {
+        tbody.innerHTML += `
+          <tr>
+            <td class="p-2 font-medium">${s.name}</td>
+            <td class="p-2 text-pink-600 font-semibold">${s.price}</td>
+            <td class="p-2 text-gray-600">${s.duration}</td>
+            <td class="p-2 text-center space-x-2">
+              <button onclick="editSvc(${s.id})" class="text-blue-600 hover:underline">แก้ไข</button>
+              <button onclick="deleteSvc(${s.id})" class="text-red-500 hover:underline">ลบ</button>
+            </td>
+          </tr>
         `;
-        list.appendChild(item);
       });
     }
 
-    function updateStatus(code, status, text) {
-      const data = getBookingsData();
-      const t = data.find(b => b.code === code);
-      if (t) {
-        t.depositStatus = status;
-        t.statusText = text;
-        saveBookingsData(data);
-        renderQueue();
+    function saveService(e) {
+      e.preventDefault();
+      const id = document.getElementById('editId').value;
+      const services = getServices();
+      const name = document.getElementById('svcName').value.trim();
+      const price = parseFloat(document.getElementById('svcPrice').value);
+      const duration = parseInt(document.getElementById('svcDuration').value);
+
+      if (id) {
+        const idx = services.findIndex(s => s.id == id);
+        if (idx !== -1) services[idx] = { id: parseInt(id), name, price, duration };
+      } else {
+        services.push({ id: Date.now(), name, price, duration });
+      }
+      saveServices(services);
+      cancelEdit();
+      renderSvcTable();
+    }
+
+    function editSvc(id) {
+      const s = getServices().find(x => x.id === id);
+      if (!s) return;
+      document.getElementById('editId').value = s.id;
+      document.getElementById('svcName').value = s.name;
+      document.getElementById('svcPrice').value = s.price;
+      document.getElementById('svcDuration').value = s.duration;
+      document.getElementById('saveBtn').innerText = 'บันทึกการแก้ไข';
+      document.getElementById('cancelBtn').classList.remove('hidden');
+    }
+
+    function cancelEdit() {
+      document.getElementById('editId').value = '';
+      document.getElementById('svcName').value = '';
+      document.getElementById('svcPrice').value = '';
+      document.getElementById('svcDuration').value = '';
+      document.getElementById('saveBtn').innerText = '+ เพิ่มบริการ';
+      document.getElementById('cancelBtn').classList.add('hidden');
+    }
+
+    function deleteSvc(id) {
+      if (confirm('ยืนยันลบรายการนี้?')) {
+        const services = getServices().filter(s => s.id !== id);
+        saveServices(services);
+        renderSvcTable();
       }
     }
 
-    function renderServices() {
-      const c = document.getElementById('serviceList');
-      c.innerHTML = '';
-      getServicesData().forEach(s => {
-        const d = document.createElement('div');
-        d.className = 'p-2.5 border rounded-xl bg-slate-50 flex justify-between items-center text-xs';
-        d.innerHTML = `
-          <div><strong class="block text-slate-800">${s.name}</strong><span class="text-slate-400">${s.price}.- (บล็อก ${s.duration} น.)</span></div>
-          <button onclick="delService(${s.id})" class="text-rose-500 font-bold px-2 hover:bg-rose-50 rounded-lg">ลบ</button>
-        `;
-        c.appendChild(d);
-      });
-    }
-
-    function openModal() {
-      document.getElementById('svcModal').classList.remove('hidden');
-      document.getElementById('svcModal').classList.add('flex');
-    }
-    function closeModal() {
-      document.getElementById('svcModal').classList.add('hidden');
-      document.getElementById('svcModal').classList.remove('flex');
-    }
-
-    function addService() {
-      const name = document.getElementById('mName').value;
-      const price = parseInt(document.getElementById('mPrice').value);
-      const duration = parseInt(document.getElementById('mDuration').value);
-      if (!name || !price || !duration) return alert('กรอกข้อมูลให้ครบถ้วนค่ะ');
-
-      const data = getServicesData();
-      data.push({ id: Date.now(), name, price, duration, category: 'บริการเสริม & ล้างเล็บ' });
-      saveServicesData(data);
-      closeModal();
-      renderServices();
-    }
-
-    function delService(id) {
-      if (confirm('ยืนยันลบบริการนี้ใช่หรือไม่?')) {
-        saveServicesData(getServicesData().filter(s => s.id !== id));
-        renderServices();
-      }
-    }
-
-    document.getElementById('dateFilter').value = new Date().toISOString().split('T')[0];
-    renderQueue();
+    // เรียกตรวจสิทธิ์ทันทีเมื่อเปิดหน้า
+    checkAuth();
   </script>
 </body>
 </html>
