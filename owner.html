@@ -10,7 +10,7 @@
 </head>
 <body class="bg-gray-50 min-h-screen">
 
-  <!-- ================= หน้าต่างกรอกรหัสผ่านแอดมิน ================= -->
+  
   <div id="loginSection" class="min-h-screen flex items-center justify-center p-4">
     <div class="bg-white p-8 rounded-2xl shadow-md border border-gray-100 max-w-sm w-full text-center space-y-5">
       <div class="w-14 h-14 bg-pink-100 text-pink-600 rounded-full flex items-center justify-center mx-auto text-2xl font-bold">
@@ -40,9 +40,9 @@
     </div>
   </div>
 
-  <!-- ================= หน้าจัดการของแอดมิน (แสดงเมื่อล็อกอินผ่านแล้ว) ================= -->
+
   <div id="adminPanel" class="hidden max-w-4xl mx-auto p-6 space-y-6">
-    <!-- Header -->
+ 
     <div class="flex justify-between items-center bg-white p-4 rounded-xl border border-gray-200 shadow-sm">
       <div>
         <h1 class="text-lg font-bold text-gray-800">ระบบเจ้าของร้าน (Admin Panel)</h1>
@@ -56,7 +56,7 @@
       </div>
     </div>
 
-    <!-- ส่วนที่ 1: คำนวณยอดเงินและหักมัดจำ 50 บาท (ID 5) -->
+ 
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-3">
       <div class="flex justify-between items-center border-b pb-2">
         <h2 class="font-semibold text-gray-800 text-sm">หักยอดมัดจำ 50 บาทจากค่าบริการจริง (ID 5)</h2>
@@ -78,14 +78,14 @@
       </div>
     </div>
 
-    <!-- ส่วนที่ 2: จัดการรายการบริการ เพิ่ม/แก้ไข/ลบ (ID 7) -->
+
     <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm space-y-4">
       <div class="flex justify-between items-center border-b pb-2">
         <h2 class="font-semibold text-gray-800 text-sm">เพิ่ม แก้ไข และลบรายการบริการ (ID 7)</h2>
         <span class="text-xs bg-pink-100 text-pink-700 px-2 py-0.5 rounded font-medium">User Story ID 7</span>
       </div>
 
-      <!-- ฟอร์มเพิ่ม/แก้ -->
+    
       <form onsubmit="saveService(event)" class="grid grid-cols-1 sm:grid-cols-4 gap-2">
         <input type="hidden" id="editId">
         <input type="text" id="svcName" placeholder="ชื่อบริการ" required class="border rounded-lg px-3 py-1.5 text-xs col-span-2">
@@ -97,7 +97,7 @@
         </div>
       </form>
 
-      <!-- ตารางแสดงรายการ -->
+    
       <table class="w-full text-xs text-left">
         <thead class="bg-gray-50 border-y">
           <tr>
@@ -114,10 +114,10 @@
 
   <script src="shared.js"></script>
   <script>
-    // รหัสผ่านของแอดมิน (สามารถเปลี่ยนตรงนี้ได้)
+ 
     const ADMIN_PASS = "admin1234";
 
-    // ตรวจสอบว่าเคยเข้าสู่ระบบค้างไว้หรือไม่ (Session Storage)
+ 
     function checkAuth() {
       const isAuth = sessionStorage.getItem('isAdminLoggedIn');
       if (isAuth === 'true') {
@@ -131,7 +131,6 @@
       }
     }
 
-    // ฟังก์ชันตรวจสอบการล็อกอิน
     function handleLogin(e) {
       e.preventDefault();
       const enteredPass = document.getElementById('adminPassword').value;
@@ -147,13 +146,13 @@
       }
     }
 
-    // ฟังก์ชันออกจากระบบ
+  
     function logoutAdmin() {
       sessionStorage.removeItem('isAdminLoggedIn');
       checkAuth();
     }
 
-    // --- ส่วนการทำงานเดิมของ ID 5 และ ID 7 ---
+
     function calcNet() {
       const price = parseFloat(document.getElementById('actualPrice').value) || 0;
       const net = Math.max(0, price - 50);
@@ -226,7 +225,7 @@
       }
     }
 
-    // เรียกตรวจสิทธิ์ทันทีเมื่อเปิดหน้า
+
     checkAuth();
   </script>
 </body>
